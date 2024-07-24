@@ -27,6 +27,8 @@ const authRouter: FastifyPluginAsync = async (app) => {
         id: registeredUser.id,
         email: registeredUser.email,
         displayName: registeredUser.displayName,
+        firstName: registeredUser.firstName,
+        lastName: registeredUser.lastName,
         isVerified: registeredUser.isVerified,
       }
 
@@ -59,6 +61,8 @@ const authRouter: FastifyPluginAsync = async (app) => {
         id: user.id,
         email: user.email,
         displayName: user.displayName,
+        firstName: user.firstName,
+        lastName: user.lastName,
         isVerified: user.isVerified,
       }
 

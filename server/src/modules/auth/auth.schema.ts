@@ -10,8 +10,10 @@ export const loginInputSchema = Type.Object(
 
 export const registerInputSchema = Type.Object(
   {
-    displayName: Type.String(),
     email: Type.String({ format: 'email' }),
+    displayName: Type.String(),
+    firstName: Type.Optional(Type.String()),
+    lastName: Type.Optional(Type.String()),
     password: Type.String({ minLength: 6 }),
   },
   { additionalProperties: false }
