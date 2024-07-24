@@ -4,8 +4,10 @@ CREATE TYPE "OAuthProvider" AS ENUM ('GOOGLE', 'GITHUB', 'LINKEDIN');
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
-    "displayName" TEXT NOT NULL,
     "email" TEXT NOT NULL,
+    "displayName" TEXT NOT NULL,
+    "firstName" TEXT,
+    "lastName" TEXT,
     "password" TEXT NOT NULL,
     "isVerified" BOOLEAN NOT NULL DEFAULT false,
     "oauthProvider" "OAuthProvider",
