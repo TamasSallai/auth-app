@@ -33,9 +33,7 @@ const SignIn = () => {
     onError: (error) => {
       if (error instanceof AxiosError) {
         const data = error.response?.data // response data
-        const message: string = data
-          ? data.error.message
-          : 'Something went wrong'
+        const message: string = data ? data.message : 'Something went wrong'
         setError('root', { type: 'custom', message })
       }
     },

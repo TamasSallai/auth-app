@@ -37,7 +37,7 @@ const SignUp = () => {
     onError: (error) => {
       if (error instanceof AxiosError) {
         const data = error.response?.data // response data
-        const message = data ? data.error.message : 'Something went wrong'
+        const message = data ? data.message : 'Something went wrong'
         setError('root', { type: 'custom', message })
       }
     },
