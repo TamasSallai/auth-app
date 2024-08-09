@@ -1,0 +1,38 @@
+@baseUrl = http://localhost:3000/api/auth
+
+### Register a new user
+POST {{baseUrl}}/register
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "password123",
+  "displayName": "John Doe"
+}
+
+### Login
+POST {{baseUrl}}/login
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+
+### Logout
+GET {{baseUrl}}/logout
+
+### Get user profile
+GET {{baseUrl}}/profile
+
+### Initiate Google OAuth login
+GET {{baseUrl}}/google/login
+
+### Google OAuth callback
+GET {{baseUrl}}/google/callback
+
+### Initiate GitHub OAuth login
+GET {{baseUrl}}/github/login
+
+### GitHub OAuth callback
+GET {{baseUrl}}/github/callback
