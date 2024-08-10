@@ -14,26 +14,23 @@ export class UsersService {
   constructor(private prismaService: PrismaService) {}
 
   async create(data: CreateUserDto) {
-    const { email, password, oauthProvider } = data
+    const normalizedEmail = data.email.trim().toLowerCase()
+    data.email = normalizedEmail
 
-    const user = await this.findOneByEmail(email)
-
-    if (user) {
+    const existingUser = await this.findOneByEmail(normalizedEmail)
+    if (existingUser) {
       throw new ConflictException('User with email already exists.')
     }
 
-    if (!oauthProvider && !password) {
+    if (!data.oauthProvider && !data.password) {
       throw new BadRequestException('Password is required.')
     }
 
-    if (password) {
-      const passwordHash = await bcrypt.hash(password, 10)
-      data.password = passwordHash
+    if (data.password) {
+      data.password = await bcrypt.hash(data.password, 10)
     }
 
-    return this.prismaService.user.create({
-      data,
-    })
+    return this.prismaService.user.create({ data })
   }
 
   findAll() {
@@ -54,7 +51,7 @@ export class UsersService {
 
   async findOneByEmail(email: string) {
     return this.prismaService.user.findUnique({
-      where: { email },
+      where: { email: email.trim().toLowerCase() },
     })
   }
 
@@ -63,6 +60,11 @@ export class UsersService {
 
     if (data.password) {
       data.password = await bcrypt.hash(data.password, 10)
+    }
+
+    if (data.email) {
+      const normalizedEmail = data.email.trim().toLowerCase()
+      data.email = normalizedEmail
     }
 
     return this.prismaService.user.update({
