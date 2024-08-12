@@ -26,12 +26,4 @@ export class CreateUserDto {
   @IsString()
   @MinLength(6)
   password?: string
-
-  @IsOptional()
-  @IsEnum(OAuthProvider)
-  oauthProvider?: OAuthProvider
-
-  @IsOptional()
-  @IsString()
-  oauthId?: string
 }
