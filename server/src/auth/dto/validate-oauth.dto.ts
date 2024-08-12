@@ -18,7 +18,7 @@ export class ValidateOauthDto {
   oauthProvider: OAuthProvider
 
   @IsString()
-  oauthId: string
+  oauthProviderId: string
 
   @IsString()
   isVerified: boolean

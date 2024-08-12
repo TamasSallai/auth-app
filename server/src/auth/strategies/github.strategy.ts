@@ -20,7 +20,7 @@ export class GithubStrategy extends PassportStrategy(Strategy) {
       displayName: profile.displayName,
       email: profile.emails[0].value,
       oauthProvider: 'GITHUB',
-      oauthId: profile.id,
+      oauthProviderId: profile.id,
       isVerified: true,
     })
 

@@ -20,9 +20,20 @@ model User {
   lastName      String?
   email         String         @unique
   password      String?
-  oauthProvider OAuthProvider?
-  oauthId       String?        @unique
   isVerified    Boolean        @default(false)
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
+  OAuthAccounts OAuthAccount[]
+}
+
+model OAuthAccount {
+  id              String        @id @default(uuid())
+  oauthProvider   OAuthProvider
+  oauthProviderId String        @unique
+  createdAt       DateTime      @default(now())
+  user            User          @relation(fields: [userId], references: [id])
+  userId          String
+
+  @@unique([oauthProvider, oauthProviderId])
+  @@unique([oauthProvider, userId])
 }
