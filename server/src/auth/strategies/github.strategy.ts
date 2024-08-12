@@ -15,11 +15,13 @@ export class GithubStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(_: string, __: string, profile: Profile) {
+    console.log(profile)
     const user = await this.authService.validateOauth({
       displayName: profile.displayName,
       email: profile.emails[0].value,
       oauthProvider: 'GITHUB',
       oauthId: profile.id,
+      isVerified: true,
     })
 
     return user

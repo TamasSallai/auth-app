@@ -19,4 +19,7 @@ export class ValidateOauthDto {
 
   @IsString()
   oauthId: string
+
+  @IsString()
+  isVerified: boolean
 }

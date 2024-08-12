@@ -22,6 +22,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
       email: profile.emails[0].value,
       oauthProvider: 'GOOGLE',
       oauthId: profile.id,
+      isVerified: true,
     })
 
     return user
