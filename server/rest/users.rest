@@ -9,9 +9,7 @@ Content-Type: application/json
   "firstName": "John",
   "lastName": "Doe",
   "email": "john.doe@example.com",
-  "password": "password123",
-  "oauthProvider": "GOOGLE",
-  "oauthId": "123456789"
+  "password": "password123"
 }
 
 ### Get all users
