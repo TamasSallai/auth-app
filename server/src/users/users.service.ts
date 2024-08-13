@@ -1,45 +1,116 @@
 import * as bcrypt from 'bcrypt'
 import {
-  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common'
-import { CreateUserDto } from './dto/create-user.dto'
-import { UpdateUserDto } from './dto/update-user.dto'
 import { PrismaService } from 'src/prisma/prisma.service'
+import { CreateUserDto } from './dto/create-user.dto'
+import { CreateUserOauthDto } from './dto/create-user-oauth'
+import { UpdateUserDto } from './dto/update-user.dto'
 
 @Injectable()
 export class UsersService {
   constructor(private prismaService: PrismaService) {}
 
-  async create(data: CreateUserDto) {
-    const normalizedEmail = data.email.trim().toLowerCase()
-    data.email = normalizedEmail
+  private normalizeEmail(email: string): string {
+    return email.trim().toLowerCase()
+  }
 
+  private normalizeDisplayName(displayName: string): string {
+    return displayName.trim()
+  }
+
+  private normalizeName(name: string): string {
+    return name.trim().charAt(0).toUpperCase() + name.slice(1).toLowerCase()
+  }
+
+  async create({
+    displayName,
+    firstName,
+    lastName,
+    email,
+    password,
+  }: CreateUserDto) {
+    const normalizedEmail = this.normalizeEmail(email)
     const existingUser = await this.findOneByEmail(normalizedEmail)
     if (existingUser) {
       throw new ConflictException('User with email already exists.')
     }
 
-    if (!data.oauthProvider && !data.password) {
-      throw new BadRequestException('Password is required.')
-    }
-
-    if (data.password) {
-      data.password = await bcrypt.hash(data.password, 10)
-    }
-
-    return this.prismaService.user.create({ data })
+    return this.prismaService.user.create({
+      data: {
+        displayName: this.normalizeDisplayName(displayName),
+        firstName: firstName ? this.normalizeName(firstName) : undefined,
+        lastName: lastName ? this.normalizeName(lastName) : undefined,
+        email: normalizedEmail,
+        password: await bcrypt.hash(password, 10),
+      },
+      include: { OAuthAccounts: true },
+    })
   }
 
-  findAll() {
-    return this.prismaService.user.findMany()
+  async createWithOauth({
+    displayName,
+    firstName,
+    lastName,
+    email,
+    oauthProvider,
+    oauthProviderId,
+  }: CreateUserOauthDto) {
+    const normalizedEmail = this.normalizeEmail(email)
+    let user = await this.findOneByEmail(normalizedEmail)
+    if (user) {
+      const existingOAuthAccount = user.OAuthAccounts.find(
+        (account) => account.oauthProvider === oauthProvider
+      )
+
+      console.log('existingOAuthAccount:', existingOAuthAccount)
+
+      if (!existingOAuthAccount) {
+        user = await this.prismaService.user.update({
+          where: { id: user.id },
+          data: {
+            OAuthAccounts: {
+              create: {
+                oauthProvider,
+                oauthProviderId,
+              },
+            },
+          },
+          include: { OAuthAccounts: true },
+        })
+      }
+      return user
+    }
+
+    return this.prismaService.user.create({
+      data: {
+        displayName: this.normalizeDisplayName(displayName),
+        firstName: firstName ? this.normalizeName(firstName) : undefined,
+        lastName: lastName ? this.normalizeName(lastName) : undefined,
+        email: normalizedEmail,
+        OAuthAccounts: {
+          create: {
+            oauthProvider,
+            oauthProviderId,
+          },
+        },
+      },
+      include: { OAuthAccounts: true },
+    })
+  }
+
+  async findAll() {
+    return this.prismaService.user.findMany({
+      include: { OAuthAccounts: true },
+    })
   }
 
   async findOneById(id: string) {
     const user = await this.prismaService.user.findUnique({
       where: { id },
+      include: { OAuthAccounts: true },
     })
 
     if (!user) {
@@ -50,26 +121,40 @@ export class UsersService {
   }
 
   async findOneByEmail(email: string) {
+    const normalizeEmail = this.normalizeEmail(email)
     return this.prismaService.user.findUnique({
-      where: { email: email.trim().toLowerCase() },
+      where: { email: normalizeEmail },
+      include: { OAuthAccounts: true },
     })
   }
 
-  async update(id: string, data: UpdateUserDto) {
+  async update(id: string, dto: UpdateUserDto) {
     await this.findOneById(id)
 
-    if (data.password) {
-      data.password = await bcrypt.hash(data.password, 10)
+    if (dto.password) {
+      dto.password = await bcrypt.hash(dto.password, 10)
     }
 
-    if (data.email) {
-      const normalizedEmail = data.email.trim().toLowerCase()
-      data.email = normalizedEmail
+    if (dto.email) {
+      dto.email = this.normalizeEmail(dto.email)
     }
 
-    return this.prismaService.user.update({
+    if (dto.displayName) {
+      dto.displayName = this.normalizeDisplayName(dto.displayName)
+    }
+
+    if (dto.firstName) {
+      dto.firstName = this.normalizeName(dto.firstName)
+    }
+
+    if (dto.lastName) {
+      dto.lastName = this.normalizeName(dto.lastName)
+    }
+
+    return await this.prismaService.user.update({
       where: { id },
-      data,
+      data: dto,
+      include: { OAuthAccounts: true },
     })
   }
 
@@ -78,6 +163,7 @@ export class UsersService {
 
     return this.prismaService.user.delete({
       where: { id },
+      include: { OAuthAccounts: true },
     })
   }
 }

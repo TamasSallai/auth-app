@@ -1,13 +1,7 @@
 import { OAuthProvider } from '@prisma/client'
-import {
-  IsEmail,
-  IsEnum,
-  IsOptional,
-  IsString,
-  MinLength,
-} from 'class-validator'
+import { IsBoolean, IsEmail, IsOptional, IsString } from 'class-validator'
 
-export class CreateUserDto {
+export class CreateUserOauthDto {
   @IsString()
   displayName: string
 
@@ -22,8 +16,12 @@ export class CreateUserDto {
   @IsEmail()
   email: string
 
-  @IsOptional()
   @IsString()
-  @MinLength(6)
-  password: string
+  oauthProvider: OAuthProvider
+
+  @IsString()
+  oauthProviderId: string
+
+  @IsBoolean()
+  isVerified: boolean
 }

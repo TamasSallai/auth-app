@@ -17,55 +17,35 @@ export class AuthService {
     const user = await this.usersService.findOneByEmail(data.email)
 
     if (user) {
+      if (!user.password) {
+        throw new ConflictException(
+          "This email is associated with a social account. If you'd like to use a password to log in, you can set up one manually after loggin in."
+        )
+      }
+
       throw new ConflictException('User with email already exists.')
     }
 
-    const newUser = await this.usersService.create(data)
-
-    return {
-      id: newUser.id,
-      displayName: newUser.displayName,
-      firstName: newUser.firstName,
-      lastName: newUser.lastName,
-      email: newUser.email,
-    }
+    return this.usersService.create(data)
   }
 
   async login({ email, password }: LoginDto) {
     const user = await this.usersService.findOneByEmail(email)
-
     if (!user) throw new UnauthorizedException('Invalid email or password.')
 
-    if (user.oauthProvider)
-      throw new UnauthorizedException(
-        `Login with your ${user.oauthProvider} account.`
+    if (!user.password)
+      throw new ConflictException(
+        "This email is associated with a social account. If you'd like to use a password to log in, you can set up one manually after loggin in."
       )
 
     const isCorrectPassword = await bcrypt.compare(password, user.password)
-
     if (!isCorrectPassword)
       throw new UnauthorizedException('Invalid email or password.')
 
-    return {
-      id: user.id,
-      displayName: user.displayName,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-    }
+    return user
   }
 
   async validateOauth(data: ValidateOauthDto) {
-    const user = await this.usersService.findOneByEmail(data.email)
-
-    if (!user) return this.usersService.create(data)
-
-    return {
-      id: user.id,
-      displayName: user.displayName,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-    }
+    return this.usersService.createWithOauth(data)
   }
 }
