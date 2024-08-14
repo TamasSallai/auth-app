@@ -1,28 +1,24 @@
 {
   "compilerOptions": {
-    /* Base Options */
-    "baseUrl": "./",
-    "paths": {
-      "@/*": ["src/*"]
-    },
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "target": "es2022",
-    // "verbatimModuleSyntax": true,
-    "allowJs": true,
-    "resolveJsonModule": false,
-    "moduleDetection": "force",
-
-    /* Strictness */
-    "strict": true,
-    "noUncheckedIndexedAccess": true,
-
-    /* Transpiling with TypeScript: */
-    "moduleResolution": "NodeNext",
-    "module": "NodeNext",
-    "outDir": "./dist",
+    "module": "commonjs",
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "ES2021",
     "sourceMap": true,
-
-    "lib": ["es2022"]
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "incremental": true,
+    "skipLibCheck": true,
+    "strictNullChecks": false,
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "forceConsistentCasingInFileNames": false,
+    "noFallthroughCasesInSwitch": false
+  },
+  "watchOptions": {
+    "watchFile": "fixedPollingInterval"
   }
 }
