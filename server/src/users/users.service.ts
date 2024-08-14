@@ -55,6 +55,7 @@ export class UsersService {
     firstName,
     lastName,
     email,
+    isVerified,
     oauthProvider,
     oauthProviderId,
   }: CreateUserOauthDto) {
@@ -71,6 +72,7 @@ export class UsersService {
         user = await this.prismaService.user.update({
           where: { id: user.id },
           data: {
+            isVerified, // Updating isVerified field on OAuth login
             OAuthAccounts: {
               create: {
                 oauthProvider,
@@ -90,6 +92,7 @@ export class UsersService {
         firstName: firstName ? this.normalizeName(firstName) : undefined,
         lastName: lastName ? this.normalizeName(lastName) : undefined,
         email: normalizedEmail,
+        isVerified,
         OAuthAccounts: {
           create: {
             oauthProvider,
