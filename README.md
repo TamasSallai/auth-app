@@ -18,14 +18,14 @@ The app implements best practices in security including:
 
 ## Development Insights
 
-My goal was to create a secure authentication application that enables users to register locally and through third-party OAuth providers, **which** can be used in future projects.
+My goal was to create a secure authentication application that enables users to register locally and through third-party OAuth providers, which can be used in future projects.
 
-During development, I encountered many design decisions that required **careful** consideration. To list a few:
+During development, I encountered many design decisions that required careful consideration. To list a few:
 
-- Session-based or JWT authentication? This was only a matter of preference. A session-based authentication is easy to implement, but the drawback is that **the** project now needs a fast memory database to save the sessions (Redis).
+- Session-based or JWT authentication? This was only a matter of preference. A session-based authentication is easy to implement, but the drawback is that the project now needs a fast memory database to save the sessions (Redis).
 - Users and OAuth accounts are saved in different tables with a one-to-many connection between them.
 - After a user has registered with email and password, they can link an OAuth account by simply logging in with a selected provider.
-- A user **who** first registered with an OAuth account can set up a password manually after logging in, making email and password authentication available.
+- A user who first registered with an OAuth account can set up a password manually after logging in, making email and password authentication available.
 - By default, a user is in "not verified" status and they can verify their account in 2 ways:
   - Through email verification
   - OAuth users have a verified status by default, so logging in with an OAuth account can verify an unverified user.
